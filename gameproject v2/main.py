@@ -1,3 +1,4 @@
+# FIXME vyřešte si warningy ve všech souborech
 import pygame
 import psutil
 import os
@@ -8,6 +9,7 @@ from quoridor.constants import WIDTH, HEIGHT, SQUARE_SIZE, WHITE, RED, BLACK
 pygame.init()
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption("Quoridor")
+# FIXME warning, importy patří nahoru
 from pygame.locals import *
 from quoridor.board import player1, player2, Board
 from quoridor.pawn import Pawn
@@ -17,6 +19,7 @@ from quoridor.minimax.algorithm import minimax
 board = Board()
 back = pygame.Surface((WIDTH, HEIGHT))
 background = back.convert()
+# FIXME nepoužitá proměnná, ihned redeklarovaná
 background = pygame.image.load('wood.png').convert()
 screen.blit(background, (0, 0))
 pygame.draw.rect(screen, (0, 0, 0), Rect((10, 10), (450, 450)), 5)
@@ -50,6 +53,7 @@ def calc_position(row, col):
     return (x, y)
 
 
+# FIXME board proměnnou máte nastavenou jako globální, a tady ji máte znovu jako lokální -> kryjí se vám názvy
 def _draw_board(board):
     screen.blit(background, (0, 0))
     pygame.draw.rect(screen, (0, 0, 0), Rect((10, 10), (450, 450)), 5)
@@ -59,6 +63,7 @@ def _draw_board(board):
     wall_board(board)
 
 
+# FIXME taky
 def wall_board(board):
     pygame.draw.rect(screen, (0, 0, 0), [0, 0, 90, 20], 0)
     screen.blit(font.render('Red:' + str(board.player_list.sprites()[0].walls) + ', Blue:' + str(player2.walls), True,
@@ -68,8 +73,10 @@ def wall_board(board):
 def start_the_game():
     global run, board, possible_spots, bar_count
 
+    # FIXME opět globál vs local
     screen = pygame.display.set_mode([WIDTH, HEIGHT])
     background = back.convert()
+    # FIXME opět globál vs local
     background = pygame.image.load('wood.png').convert()
     screen.blit(background, (0, 0))
     pygame.draw.rect(screen, (0, 0, 0), Rect((10, 10), (450, 450)), 5)
@@ -105,6 +112,8 @@ def start_the_game():
                 x, y = pos
                 row = y // SQUARE_SIZE
                 col = x // SQUARE_SIZE
+
+                # FIXME srovnejte si syntaxi -> někdy používáte závorky kolem if, někdy ne, tak to dělejte konzistentně
                 if (get_row_col_from_mouse(pygame.mouse.get_pos()) != None):
                     pawn = get_row_col_from_mouse(pygame.mouse.get_pos())
                     if game.turn == BLACK and pawn.color == BLACK:
@@ -129,6 +138,8 @@ def start_the_game():
                         board.bar_list.draw(screen)
                     if bar_count == 1:
                         second_row = get_bar(pygame.mouse.get_pos())
+                        # FIXME tady už je dost ošklivý zanoření, ani není vidět čitelně celý řádek,
+                        # je třeba to rozdělit na vícero metod a kód lépe strukturovat, aby půl řádku nezabíralo samotné odsazení
                         if (
                                 second_row.row == first_bar.row + 1 and second_row.col == first_bar.col and first_bar.width == second_row.width == 5) or (
                                 second_row.row == first_bar.row - 1 and second_row.col == first_bar.col and first_bar.width == second_row.width == 5) or (
@@ -155,11 +166,13 @@ def start_the_game():
 
 
 def set_difficulty(value, number):
+    # FIXME undefined difficulty
     global difficulty
     difficulty = number
 
 
 def disable():
+    # FIXME undefined difficulty
     global difficulty
     try:
         difficulty

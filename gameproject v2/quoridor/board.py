@@ -71,6 +71,13 @@ class Board():
         row, col = pawn.row, pawn.col
         player2 = self.get_player2()
         player1 = self.get_player1()
+
+        # FIXME tohle taky není hezky napsaný, celý to je o hooodně copy pastu
+        # 1) pawn 1 a pawn 2 mají stejnou logiku, jen vůči sobě inverzní co se týče znamínek
+        # 2) každá ta pozice a ty zanořený ify a for cykly se dají alespoň vytknout do nějakých pojmenovaných metod,
+        #    aby to dávalo při čtení zdrojáku smysl
+        # 3) ta logika je ale stejně podezřelá, jde přeci o to ověřit 4 místa, kam se může hrát pohybovat, ne?
+        #    to by mělo být prostě na jednu funkci "is_spot_empty" a její 4x zavolání, ne?
         if (pawn.name == 1):
             if not (player2.row == row + 1 and player2.col == col):
                 if (row + 1 < 9):
@@ -205,6 +212,8 @@ class Board():
         return abs(toCoord.row - fromCoord.row) + abs(toCoord.col - fromCoord.col)
 
     def astar_search(self, start, end):
+        # FIXME open se používá jako funkce na otevření souboru/streamu, určitě není vhodné mít pojmenovanou proměnnou
+        # úplně stejně
         open = []
         closed = []
         previous = []
@@ -216,6 +225,10 @@ class Board():
         while len(open) > 0:
             current_node = open.pop(0)
             closed.append(current_node)
+
+            # FIXME tenhle sort je dost náročný, volá se hooooodněkrát a celý algoritmus taky dokáže hodně zpomalit,
+            # psal jsem vám to i při první revizi, že je toto jedno z těch krizových míst
+            # správně by tu měl být heapq, protože vás vždy zajímá jen toto: current_node = open.pop(0)
             open.sort(key=takeH)
             if current_node.row == goal_node:
                 path = []
@@ -251,6 +264,8 @@ class Board():
                     previous.append(current_node)
                     neighbor.g = g_score
                     neighbor.h = g_score + self.ManhattanDistanceToFinish(neighbor, goal_node)
+
+                    # FIXME podivný warning opět, end zde nemá efekt
                     end
                     end
         return [None] * 100

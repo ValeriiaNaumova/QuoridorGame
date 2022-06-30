@@ -44,12 +44,16 @@ def simulate_move_bar(bar_1, bar_2, temp_board, temp_pawn):
     return temp_board
 
 
+# FIXME tahle metoda je volaná hoooooooodněkrát, je to v rámci toho rekurzivního minimaxu,
+# je potřeba se zaměřit na co největší optimalizaci, např. ty vnořenný enumerate co jsou stejný jde optimalizovat,
+# nebo určitě i ty ify jdou nějak udělat lépe (jen to nejde pořádně přečíst)
 def get_all_moves(board, color):
     moves = []
     valid_moves_bars = []
     count = len(list((x for x in board.bar_list if (x.color == "black"))))
     for index, item in enumerate((x for x in board.bar_list if (x.color == "black"))):
         for index1, item1 in enumerate((x for x in board.bar_list if (x.color == "black"))):
+            # FIXME napište si nějakou metodu na ověření, že je něco na okraji, hodí se to i do main.py
             if ((index != count - 1) and item.width == item1.width and (
                     (item.row == item1.row + 1 and item.col == item1.col and item.width == 5) or (
                     item.row == item1.row - 1 and item.col == item1.col and item.width == 5) or (
@@ -57,6 +61,7 @@ def get_all_moves(board, color):
                             item.col == item1.col + 1 and item.row == item1.row and item.width == 50))):
                 if (valid_moves_bars == []):
                     valid_moves_bars.append((item, item1))
+                    # FIXME proč je tento if tak ošklivě zarovnaný, že tam je taková megamezera? to se nedá luštit
                 elif (len(list((x for x in valid_moves_bars if (((x[0].row, x[0].col) == (item.row, item.col) and (
                         x[1].row, x[1].col) == (item1.row, item1.col)) or ((x[0].row, x[0].col) == (
                         item1.row, item1.col) and (
@@ -67,6 +72,8 @@ def get_all_moves(board, color):
     for pawn in (x for x in board.player_list if (x.color == color)):
         valid_moves_pawns = board.get_possible_spots(pawn)
         for move in valid_moves_pawns:
+            # TODO viz bakalářka, board.copy() a pawn.copy() i překresluje, to by bylo vhodné změnit, ale chápu,
+            # že už to snadno nepůjde
             temp_board = board.copy()
             temp_pawn = temp_board.get_pawn(pawn.row, pawn.col)
             new_board = simulate_move(temp_pawn, move, temp_board)
